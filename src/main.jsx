@@ -3,6 +3,11 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 import { initializeApp } from "firebase/app";
+import ErrorPage from "./pages/ErrorPage.jsx";
+import Home from "./pages/Home.jsx";
+import Upload from "./pages/Upload.jsx";
+import Videos from "./pages/Videos.jsx";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -16,8 +21,29 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig);
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+      {
+        path: "/upload",
+        element: <Upload />,
+      },
+      {
+        path: "/videos",
+        element: <Videos />,
+      },
+    ],
+  },
+]);
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );

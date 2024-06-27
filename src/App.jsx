@@ -1,7 +1,11 @@
+import { Outlet } from "react-router-dom";
+
 function App() {
   return (
     <>
-      <h1>Start</h1>
+      <main className="container">
+        <Outlet />
+      </main>
     </>
   );
 }
