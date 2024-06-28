@@ -8,6 +8,7 @@ import Home from "./pages/Home.jsx";
 import Upload from "./pages/Upload.jsx";
 import Videos from "./pages/Videos.jsx";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import AuthProvider from "./context/auth.context.jsx";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -44,6 +45,8 @@ const router = createBrowserRouter([
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>
 );

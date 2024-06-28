@@ -1,6 +1,9 @@
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import { useContext } from "react";
+import { AuthContext } from "../context/auth.context";
 
 const Home = () => {
+  const { isLoggedIn } = useContext(AuthContext);
   const loginWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -18,13 +21,15 @@ const Home = () => {
           <h1>Home Page</h1>
         </div>
       </div>
-      <div className="row">
-        <div className="col">
-          <button onClick={loginWithGoogle} className="btn btn-success">
-            Login With Google
-          </button>
+      {!isLoggedIn && (
+        <div className="row">
+          <div className="col">
+            <button onClick={loginWithGoogle} className="btn btn-success">
+              Login With Google
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
