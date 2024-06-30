@@ -5,6 +5,7 @@ const Upload = () => {
   const [formData, setFormData] = useState({
     file: null,
     title: "",
+    questions: [{ id: new Date().getTime(), text: "" }],
   });
   const handleFileChange = (e) => {
     setFormData({ ...formData, file: e.target.files[0] });
@@ -18,6 +19,32 @@ const Upload = () => {
     e.preventDefault();
     alert("FORM_SUBMITTED");
   };
+
+  const addQuestion = () => {
+    const newQuestion = {
+      id: new Date().getTime(),
+      text: "",
+    };
+    setFormData({
+      ...formData,
+      questions: [...formData.questions, newQuestion],
+    });
+  };
+
+  const removeQuestion = (id) => {
+    const updatedQuestions = formData.questions.filter(
+      (question) => question.id !== id
+    );
+    setFormData({ ...formData, questions: updatedQuestions });
+  };
+
+  const handleQuestionChange = (id, value) => {
+    const updatedQuestions = formData.questions.map((question) =>
+      question.id === id ? { ...question, text: value } : question
+    );
+    setFormData({ ...formData, questions: updatedQuestions });
+  };
+
   if (submitting) {
     return (
       <>
@@ -70,7 +97,44 @@ const Upload = () => {
               onChange={handleFileChange}
             />
           </div>
+          {formData.questions.map((question, index) => (
+            <div key={question.id} className="mb-3">
+              <label
+                htmlFor={`formQuestion${question.id}`}
+                className="form-label"
+              >
+                Question {index + 1}
+              </label>
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  id={`formQuestion${question.id}`}
+                  placeholder="Enter your answer"
+                  value={question.text}
+                  onChange={(e) =>
+                    handleQuestionChange(question.id, e.target.value)
+                  }
+                />
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => removeQuestion(question.id)}
+                  disabled={formData.questions.length === 1}
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
           <div className="mb-3">
+            <button
+              type="button"
+              className="btn btn-secondary me-2"
+              onClick={addQuestion}
+            >
+              Add Question
+            </button>
             <button type="submit" className="btn btn-primary">
               Submit
             </button>
