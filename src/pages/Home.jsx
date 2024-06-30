@@ -1,6 +1,7 @@
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { useContext } from "react";
 import { AuthContext } from "../context/auth.context";
+import { toast } from "react-toastify";
 
 const Home = () => {
   const { isLoggedIn } = useContext(AuthContext);
@@ -11,7 +12,12 @@ const Home = () => {
       const result = await signInWithPopup(auth, provider);
       console.log(result.user);
     } catch (error) {
-      console.error(error);
+      if (error.code == "auth/cancelled-popup-request") {
+        return;
+      }
+      toast("Unexpected error please report to support.", {
+        type: "error",
+      });
     }
   };
   return (

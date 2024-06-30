@@ -8,6 +8,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { AuthContext } from "../context/auth.context";
+import { toast } from "react-toastify";
 
 const Upload = () => {
   const { user } = useContext(AuthContext);
@@ -51,9 +52,23 @@ const Upload = () => {
         title: "",
         questions: [{ id: new Date().getTime(), text: "" }],
       });
-      alert("Your video being processed");
+      toast(
+        "🦄 Your video is being processed! Feel free to submit another one.",
+        {
+          position: "top-center",
+          type: "success",
+        }
+      );
     } catch (error) {
-      alert("Error");
+      if (error.code === "storage/unauthorized") {
+        toast("Your video must be under 1 gigabyte.", {
+          type: "error",
+        });
+        return;
+      }
+      toast("Unexpected error please report to support.", {
+        type: "error",
+      });
       console.log(error);
     }
 
