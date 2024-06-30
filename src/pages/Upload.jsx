@@ -1,6 +1,17 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
+import {
+  addDoc,
+  collection,
+  getFirestore,
+  updateDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+import { AuthContext } from "../context/auth.context";
 
 const Upload = () => {
+  const { user } = useContext(AuthContext);
+
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     file: null,
@@ -17,7 +28,36 @@ const Upload = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("FORM_SUBMITTED");
+    setSubmitting(true);
+
+    try {
+      const storage = getStorage();
+      const db = getFirestore();
+      const docRef = await addDoc(collection(db, "videos"), {
+        questions: formData.questions,
+        title: formData.title,
+        userId: user.uid,
+        status: "created",
+        created_at: serverTimestamp(),
+      });
+      const firelocation = ref(storage, `videos/${user.uid}/${docRef.id}`);
+      const destination = await uploadBytes(firelocation, formData.file);
+      await updateDoc(docRef, {
+        videoPath: destination.metadata.fullPath,
+        status: "uploaded",
+      });
+      setFormData({
+        file: null,
+        title: "",
+        questions: [{ id: Date().getTime(), text: "" }],
+      });
+      alert("Your video being processed");
+    } catch (error) {
+      alert("Error");
+      console.log(error);
+    }
+
+    setSubmitting(false);
   };
 
   const addQuestion = () => {
