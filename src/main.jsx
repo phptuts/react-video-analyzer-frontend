@@ -10,6 +10,7 @@ import Videos from "./pages/Videos.jsx";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import AuthProvider from "./context/auth.context.jsx";
 import Protected from "./components/Protected.jsx";
+import Video from "./pages/Video.jsx";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -46,6 +47,14 @@ const router = createBrowserRouter([
         element: (
           <Protected>
             <Videos />
+          </Protected>
+        ),
+      },
+      {
+        path: "/videos/:videoId",
+        element: (
+          <Protected>
+            <Video />
           </Protected>
         ),
       },
