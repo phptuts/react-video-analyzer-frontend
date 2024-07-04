@@ -1,8 +1,43 @@
-import { useState } from "react";
-
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../context/auth.context";
+import { NavLink } from "react-router-dom";
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  limit,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 const Videos = () => {
   const [loading, setLoading] = useState(true);
-
+  const { isFirebaseActive, user } = useContext(AuthContext);
+  const [videos, setVideos] = useState([]);
+  useEffect(() => {
+    if (!isFirebaseActive || !user) return;
+    const getMoreVideos = async () => {
+      setLoading(true);
+      const db = getFirestore();
+      const q = query(
+        collection(db, "videos"),
+        where("status", "==", "completed"),
+        where("userId", "==", user.uid),
+        orderBy("created_at", "desc"),
+        limit(100)
+      );
+      const docs = await getDocs(q);
+      const videos = docs.docChanges().map((docChange) => {
+        return {
+          id: docChange.doc.id,
+          ...docChange.doc.data(),
+        };
+      });
+      setVideos(videos);
+      setLoading(false);
+    };
+    getMoreVideos();
+  }, [isFirebaseActive, user]);
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -23,7 +58,22 @@ const Videos = () => {
               <th scope="col"></th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+            {videos.map((item, index) => (
+              <tr key={item.id}>
+                <th scope="row">{index + 1}</th>
+                <td>{item.title}</td>
+                <td>
+                  {item.created_at
+                    .toDate()
+                    .toLocaleString("en-US", { timeZoneName: "short" })}
+                </td>
+                <td>
+                  <NavLink to={`/videos/${item.id}`}>Completed Video</NavLink>
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </>
